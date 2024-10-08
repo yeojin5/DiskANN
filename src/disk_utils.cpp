@@ -945,8 +945,9 @@ void create_disk_layout(const std::string base_file, const std::string mem_index
         n_data_nodes_per_sector = defaults::SECTOR_LEN / (ndims_reorder_file * sizeof(float));
         n_reorder_sectors = ROUND_UP(npts_64, n_data_nodes_per_sector) / n_data_nodes_per_sector;
     }
+    // disk_index_file_size: 디스크에 저장될 인덱스 파일의 총 크기 계산
     uint64_t disk_index_file_size = (n_sectors + n_reorder_sectors + 1) * defaults::SECTOR_LEN;
-
+    // metadata
     std::vector<uint64_t> output_file_meta;
     output_file_meta.push_back(npts_64);
     output_file_meta.push_back(ndims_64);
@@ -963,9 +964,10 @@ void create_disk_layout(const std::string base_file, const std::string mem_index
         output_file_meta.push_back(n_data_nodes_per_sector);
     }
     output_file_meta.push_back(disk_index_file_size);
-
+    
     diskann_writer.write(sector_buf.get(), defaults::SECTOR_LEN);
-
+    
+    // data
     std::unique_ptr<T[]> cur_node_coords = std::make_unique<T[]>(ndims_64);
     diskann::cout << "# sectors: " << n_sectors << std::endl;
     uint64_t cur_node_id = 0;
@@ -978,6 +980,7 @@ void create_disk_layout(const std::string base_file, const std::string mem_index
             {
                 diskann::cout << "Sector #" << sector << "written" << std::endl;
             }
+            // sector_buf initialize
             memset(sector_buf.get(), 0, defaults::SECTOR_LEN);
             for (uint64_t sector_node_id = 0; sector_node_id < nnodes_per_sector && cur_node_id < npts_64;
                  sector_node_id++)
