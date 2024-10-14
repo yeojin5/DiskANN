@@ -270,6 +270,10 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         auto mean_cpuus = diskann::get_mean_stats<float>(stats, query_num,
                                                          [](const diskann::QueryStats &stats) { return stats.cpu_us; });
 
+        auto mean_hops = diskann::get_mean_stats<float>(stats, query_num,
+                                                         [](const diskann::QueryStats &stats) { return stats.n_hops; });
+
+
         double recall = 0;
         if (calc_recall_flag)
         {
@@ -280,7 +284,8 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
 
         diskann::cout << std::setw(6) << L << std::setw(12) << optimized_beamwidth << std::setw(16) << qps
                       << std::setw(16) << mean_latency << std::setw(16) << latency_999 << std::setw(16) << mean_ios
-                      << std::setw(16) << mean_cpuus;
+                      << std::setw(16) << mean_cpuus 
+                      << std::setw(16) << mean_hops;
         if (calc_recall_flag)
         {
             diskann::cout << std::setw(16) << recall << std::endl;

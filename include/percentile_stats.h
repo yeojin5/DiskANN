@@ -33,6 +33,8 @@ struct QueryStats
     unsigned n_cmps = 0;       // # cmps
     unsigned n_cache_hits = 0; // # cache_hits
     unsigned n_hops = 0;       // # search hops
+	// yeojin
+	unsigned n_calc = 0;	   // # calculate dimension
 };
 
 template <typename T>
