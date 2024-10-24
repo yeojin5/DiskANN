@@ -38,6 +38,20 @@ void execute_io(io_context_t ctx, int fd, std::vector<AlignedRead> &read_reqs, u
         std::vector<struct iocb> cb(n_ops);
         for (uint64_t j = 0; j < n_ops; j++)
         {
+			// initiallize iocb
+			/*struct iocb {
+			  __u64   aio_data; --> data
+			  __u32   PADDED(aio_key, aio_rw_flags);
+			  __u16   aio_lio_opcode;
+			  __s16   aio_reqprio;
+			  __u32   aio_fildes;
+			  __u64   aio_buf;
+			  __u64   aio_nbytes;
+			  __s64   aio_offset;
+			  __u64   aio_reserved2;
+			  __u32   aio_flags;
+			  __u32   aio_resfd;
+			  }; */
             io_prep_pread(cb.data() + j, fd, read_reqs[j + iter * MAX_EVENTS].buf, read_reqs[j + iter * MAX_EVENTS].len,
                           read_reqs[j + iter * MAX_EVENTS].offset);
         }
@@ -53,7 +67,7 @@ void execute_io(io_context_t ctx, int fd, std::vector<AlignedRead> &read_reqs, u
         uint64_t n_tries = 0;
         while (n_tries <= n_retries)
         {
-            // issue reads
+            // issue reads = real op
             int64_t ret = io_submit(ctx, (int64_t)n_ops, cbs.data());
             // if requests didn't get accepted
             if (ret != (int64_t)n_ops)

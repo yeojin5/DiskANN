@@ -131,6 +131,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
 
     omp_set_num_threads(num_threads);
 
+//warm up
     uint64_t warmup_L = 20;
     uint64_t warmup_num = 0, warmup_dim = 0, warmup_aligned_dim = 0;
     T *warmup = nullptr;
@@ -162,7 +163,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         diskann::cout << "Warming up index... " << std::flush;
         std::vector<uint64_t> warmup_result_ids_64(warmup_num, 0);
         std::vector<float> warmup_result_dists(warmup_num, 0);
-
+// real search 
 #pragma omp parallel for schedule(dynamic, 1)
         for (int64_t i = 0; i < (int64_t)warmup_num; i++)
         {
@@ -173,13 +174,14 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         diskann::cout << "..done" << std::endl;
     }
 
+// print stat
     diskann::cout.setf(std::ios_base::fixed, std::ios_base::floatfield);
     diskann::cout.precision(2);
 
     std::string recall_string = "Recall@" + std::to_string(recall_at);
     diskann::cout << std::setw(6) << "L" << std::setw(12) << "Beamwidth" << std::setw(16) << "QPS" << std::setw(16)
                   << "Mean Latency" << std::setw(16) << "99.9 Latency" << std::setw(16) << "Mean IOs" << std::setw(16)
-                  << "CPU (s)";
+                  << "CPU (s)" << std::setw(16) << "# of hops";
     if (calc_recall_flag)
     {
         diskann::cout << std::setw(16) << recall_string << std::endl;
@@ -187,7 +189,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
     else
         diskann::cout << std::endl;
     diskann::cout << "==============================================================="
-                     "======================================================="
+                     "==============================================================="
                   << std::endl;
 
     std::vector<std::vector<uint32_t>> query_result_ids(Lvec.size());
@@ -286,12 +288,23 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
                       << std::setw(16) << mean_latency << std::setw(16) << latency_999 << std::setw(16) << mean_ios
                       << std::setw(16) << mean_cpuus 
                       << std::setw(16) << mean_hops;
+		
+		auto mean_cand_update = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.cand_update;}); 
+		auto mean_d_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.d_dist_calc;}); 
+		auto mean_m_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.m_dist_calc;}); 
+		auto mean_warm_up = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.warm_up;}); 
+		auto mean_result = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.result;});
+ 
+
         if (calc_recall_flag)
         {
             diskann::cout << std::setw(16) << recall << std::endl;
         }
         else
             diskann::cout << std::endl;
+ 
+		diskann::cout << std::setw(6) << "mean_cand_update" << std::setw(12) << "mean_d_dist_calc" << std::setw(16) << "mean_m_dist_calc" << std::setw(16) << "mean_warm_up" << std::setw(16) << "mean_result" <<std::endl;
+		diskann::cout << std::setw(6) << mean_cand_update  << std::setw(12) << mean_d_dist_calc << std::setw(16) << mean_m_dist_calc << std::setw(16) << mean_warm_up << std::setw(16) << mean_result<<std::endl;
         delete[] stats;
     }
 

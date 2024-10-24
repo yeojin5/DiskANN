@@ -23,6 +23,12 @@ struct QueryStats
     float total_us = 0; // total time to process query in micros
     float io_us = 0;    // total time spent in IO
     float cpu_us = 0;   // total time spent in CPU
+	//yj
+	float cand_update = 0;
+	float d_dist_calc = 0;
+	float m_dist_calc = 0;
+	float warm_up = 0;
+	float result = 0;
 
     unsigned n_4k = 0;         // # of 4kB reads
     unsigned n_8k = 0;         // # of 8kB reads
@@ -33,8 +39,6 @@ struct QueryStats
     unsigned n_cmps = 0;       // # cmps
     unsigned n_cache_hits = 0; // # cache_hits
     unsigned n_hops = 0;       // # search hops
-	// yeojin
-	unsigned n_calc = 0;	   // # calculate dimension
 };
 
 template <typename T>
