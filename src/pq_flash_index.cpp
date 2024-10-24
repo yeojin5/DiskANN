@@ -1408,6 +1408,9 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     uint32_t cmps = 0;
     uint32_t hops = 0;
     uint32_t num_ios = 0;
+	uint64_t total_requested_data_size = 0;
+	uint64_t total_useful_data_size = 0;
+	uint64_t total_data_read = 0;
 
     // cleared every iteration
     std::vector<uint32_t> frontier;
@@ -1451,7 +1454,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
                 reinterpret_cast<std::atomic<uint32_t> &>(this->_node_visit_counter[nbr.id].second).fetch_add(1);
             }
         }
-
+		total_data_read += frontier.size(); //TODO: size(=number of node to search) * node_size
         // read nhoods of frontier ids
         if (!frontier.empty())
         {
