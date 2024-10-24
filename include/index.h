@@ -359,6 +359,7 @@ template <typename T, typename TagT = uint32_t, typename LabelT = uint32_t> clas
     size_t _node_size;
     size_t _data_len;
     size_t _neighbor_len;
+	size_t total_data_size = 0;
 
     //  Start point of the search. When _num_frozen_pts is greater than zero,
     //  this is the location of the first frozen point. Otherwise, this is a

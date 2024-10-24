@@ -181,7 +181,8 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
     std::string recall_string = "Recall@" + std::to_string(recall_at);
     diskann::cout << std::setw(6) << "L" << std::setw(12) << "Beamwidth" << std::setw(16) << "QPS" << std::setw(16)
                   << "Mean Latency" << std::setw(16) << "99.9 Latency" << std::setw(16) << "Mean IOs" << std::setw(16)
-                  << "CPU (s)" << std::setw(16) << "# of hops";
+                  << "CPU (s)" << std::setw(16) << "# of hops"<<std::endl;
+	diskann::cout << std::setw(25) << "mean_cand_update" << std::setw(25) << "mean_d_dist_calc" << std::setw(25) << "mean_m_dist_calc" << std::setw(25) << "mean_warm_up" << std::setw(25) << "mean_result" <<std::endl;
     if (calc_recall_flag)
     {
         diskann::cout << std::setw(16) << recall_string << std::endl;
@@ -289,11 +290,12 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
                       << std::setw(16) << mean_cpuus 
                       << std::setw(16) << mean_hops;
 		
-		auto mean_cand_update = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.cand_update;}); 
-		auto mean_d_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.d_dist_calc;}); 
-		auto mean_m_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.m_dist_calc;}); 
-		auto mean_warm_up = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.warm_up;}); 
-		auto mean_result = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const distann::QueryStats &stats){return stats.result;});
+		auto mean_cand_update = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.cand_update;}); 
+		auto mean_d_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.d_dist_calc;}); 
+		auto mean_m_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.m_dist_calc;}); 
+		auto mean_warm_up = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.warm_up;}); 
+		auto mean_result = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.result;});
+		auto mean_total = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.total;});
  
 
         if (calc_recall_flag)
@@ -303,8 +305,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
         else
             diskann::cout << std::endl;
  
-		diskann::cout << std::setw(6) << "mean_cand_update" << std::setw(12) << "mean_d_dist_calc" << std::setw(16) << "mean_m_dist_calc" << std::setw(16) << "mean_warm_up" << std::setw(16) << "mean_result" <<std::endl;
-		diskann::cout << std::setw(6) << mean_cand_update  << std::setw(12) << mean_d_dist_calc << std::setw(16) << mean_m_dist_calc << std::setw(16) << mean_warm_up << std::setw(16) << mean_result<<std::endl;
+		diskann::cout << std::setw(25) << mean_cand_update  << std::setw(25) << mean_d_dist_calc << std::setw(25) << mean_m_dist_calc << std::setw(25) << mean_warm_up << std::setw(25) << mean_result<< std::setw(25)<< mean_total<<std::endl;
         delete[] stats;
     }
 

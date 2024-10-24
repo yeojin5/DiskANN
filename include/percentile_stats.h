@@ -29,6 +29,7 @@ struct QueryStats
 	float m_dist_calc = 0;
 	float warm_up = 0;
 	float result = 0;
+	float total = 0;
 
     unsigned n_4k = 0;         // # of 4kB reads
     unsigned n_8k = 0;         // # of 8kB reads

@@ -31,6 +31,7 @@ T=1
 	 --query_file $QUERY_PATH\
 	 --gt_file $GT_PATH\
 	 -K $K\
-	 -L $L_S\
+	 -L 10 20 30 40 50 100\
 	 --result_path $DATASET_PATH/res\
 	 --num_nodes_to_cache $C\
+	 -T 1

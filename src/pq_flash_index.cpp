@@ -366,9 +366,9 @@ void PQFlashIndex<T, LabelT>::cache_bfs_levels(uint64_t num_nodes_to_cache, std:
     diskann::cout << "Caching " << num_nodes_to_cache << "..." << std::endl;
 
     // borrow thread data
-    ScratchStoreManager<SSDThreadData<T>> manager(this->_thread_data);
-    auto this_thread_data = manager.scratch_space();
-    IOContext &ctx = this_thread_data->ctx;
+    //ScratchStoreManager<SSDThreadData<T>> manager(this->_thread_data);
+    //auto this_thread_data = manager.scratch_space();
+    //IOContext &ctx = this_thread_data->ctx;
 
     std::unique_ptr<tsl::robin_set<uint32_t>> cur_level, prev_level;
     cur_level = std::make_unique<tsl::robin_set<uint32_t>>();
@@ -455,7 +455,6 @@ void PQFlashIndex<T, LabelT>::cache_bfs_levels(uint64_t num_nodes_to_cache, std:
                 {
                     uint32_t nnbrs = nbr_buffers[i].first;
                     uint32_t *nbrs = nbr_buffers[i].second;
-
                     // explore next level
                     for (uint32_t j = 0; j < nnbrs && !finish_flag; j++)
                     {
@@ -1279,7 +1278,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
 {
 /*------------------------------warmup start----------------------------------*/
 // normalize query vector
-	Timer warm_up_t;
+	Timer warm_up_t, total_timer;
     uint64_t num_sector_per_nodes = DIV_ROUND_UP(_max_node_len, defaults::SECTOR_LEN);
     if (beam_width > num_sector_per_nodes * defaults::MAX_N_SECTOR_READS)
         throw ANNException("Beamwidth can not be higher than defaults::MAX_N_SECTOR_READS", -1, __FUNCSIG__, __FILE__,
@@ -1415,6 +1414,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
 	//retset=NeighberPriorityQueue
     visited.insert(best_medoid);
 	//robin_set = hash map
+	stats->cand_update += (float)cand_update.elapsed();
 	
     uint32_t cmps = 0;
     uint32_t hops = 0;
@@ -1429,7 +1429,6 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     frontier_read_reqs.reserve(2 * beam_width);
     std::vector<std::pair<uint32_t, std::pair<uint32_t, uint32_t *>>> cached_nhoods;
     cached_nhoods.reserve(2 * beam_width);
-	stats->cand_update += (float)cand_update.elapsed();
     // I/O and dist calc
     while (retset.has_unexpanded_node() && num_ios < io_limit)
     {
@@ -1737,6 +1736,7 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
     {
         stats->total_us = (float)query_timer.elapsed();
     }
+stats->total = total_timer.elapsed();
 }
 
 // range search returns results of all neighbors within distance of range.
