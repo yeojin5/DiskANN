@@ -3132,7 +3132,7 @@ template <typename T, typename TagT, typename LabelT> void Index<T, TagT, LabelT
     diskann::cout << "Tag to location size: " << _tag_to_location.size() << std::endl;
     diskann::cout << "Number of empty slots: " << _empty_slots.size() << std::endl;
     diskann::cout << std::boolalpha << "Data compacted: " << this->_data_compacted << std::endl;
-	diskann::cout << "total size of saved data: "<<  << std::endl;
+	diskann::cout << "total size of saved data: "<< std::endl;
     diskann::cout << "---------------------------------------------------------"
                      "------------"
                   << std::endl;

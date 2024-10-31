@@ -293,6 +293,7 @@ int search_disk_index(diskann::Metric &metric, const std::string &index_path_pre
 		auto mean_cand_update = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.cand_update;}); 
 		auto mean_d_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.d_dist_calc;}); 
 		auto mean_m_dist_calc = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.m_dist_calc;}); 
+		auto mean_io_t = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.io_us;}); 
 		auto mean_warm_up = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.warm_up;}); 
 		auto mean_result = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.result;});
 		auto mean_total = diskann::get_mean_stats<uint32_t>(stats, query_num,[](const diskann::QueryStats &stats){return stats.total;});
@@ -401,7 +402,7 @@ int main(int argc, char **argv)
         {
             std::cout << desc;
             return 0;
-        }
+	       }
         po::notify(vm);
         if (vm["use_reorder_data"].as<bool>())
             use_reorder_data = true;

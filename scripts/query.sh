@@ -24,14 +24,21 @@ T=1
 	 -L $L_B\
 	 -B $B\
 	 -M $M
- ../build/apps/search_disk_index\
-	 --data_type $DATA_TYPE\
-	 --dist_fn $DIST_FN\
-	 --index_path_prefix $INDEX_PREFIX\
-	 --query_file $QUERY_PATH\
-	 --gt_file $GT_PATH\
-	 -K $K\
-	 -L 10 20 30 40 50 100\
-	 --result_path $DATASET_PATH/res\
-	 --num_nodes_to_cache $C\
-	 -T 1
+
+for W in 2 4 6 8
+do
+	echo "Running search with W=$W"
+	../build/apps/search_disk_index\
+		--data_type $DATA_TYPE\
+		--dist_fn $DIST_FN\
+		--index_path_prefix $INDEX_PREFIX\
+		--query_file $QUERY_PATH\
+		--gt_file $GT_PATH\
+		-K $K\
+		-L 10\
+		--result_path $DATASET_PATH/res\
+		--num_nodes_to_cache $C\
+		-T 1\
+		-W $W\
+		--num_nodes_to_cache 3000
+done
