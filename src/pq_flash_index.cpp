@@ -366,9 +366,9 @@ void PQFlashIndex<T, LabelT>::cache_bfs_levels(uint64_t num_nodes_to_cache, std:
     diskann::cout << "Caching " << num_nodes_to_cache << "..." << std::endl;
 
     // borrow thread data
-    ScratchStoreManager<SSDThreadData<T>> manager(this->_thread_data);
-    auto this_thread_data = manager.scratch_space();
-    IOContext &ctx = this_thread_data->ctx;
+    //ScratchStoreManager<SSDThreadData<T>> manager(this->_thread_data);
+    //auto this_thread_data = manager.scratch_space();
+    //IOContext &ctx = this_thread_data->ctx;
 
     std::unique_ptr<tsl::robin_set<uint32_t>> cur_level, prev_level;
     cur_level = std::make_unique<tsl::robin_set<uint32_t>>();
@@ -1560,8 +1560,12 @@ void PQFlashIndex<T, LabelT>::cached_beam_search(const T *query1, const uint64_t
             uint32_t *node_buf = offset_to_node_nhood(node_disk_buf);
             uint64_t nnbrs = (uint64_t)(*node_buf);
             T *node_fp_coords = offset_to_node_coords(node_disk_buf);
-            memcpy(data_buf, node_fp_coords, _disk_bytes_per_point);
-            float cur_expanded_dist;
+			memcpy(data_buf, node_fp_coords, _disk_bytes_per_point);
+			for (size_t i = 0; i < _disk_bytes_per_point; ++i) {
+				std::cout << static_cast<int>(reinterpret_cast<unsigned char*>(data_buf)[i]) << " ";
+			}
+			std::cout << std::endl;            
+			float cur_expanded_dist;
             if (!_use_disk_index_pq)
             {
                 cur_expanded_dist = _dist_cmp->compare(aligned_query_T, data_buf, (uint32_t)_aligned_dim);
